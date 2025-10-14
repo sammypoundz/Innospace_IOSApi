@@ -11,6 +11,7 @@ import {
   acceptIntern,
   deleteIntern,
   createManualIntern,
+  getAdminDashboardSummary, // ✅ import the dashboard controller
 } from "../controllers/admin.controller";
 
 const router = Router();
@@ -18,7 +19,17 @@ const router = Router();
 // 🛡 Protect all admin routes — only ED and HeadDev can access
 router.use(protect, authorize("ED", "HeadDev"));
 
-// ✅ Admin endpoints
+/* =============================
+   📊 DASHBOARD SUMMARY ENDPOINT
+============================= */
+
+// ✅ Admin overview (Interns + Finance)
+router.get("/summary", getAdminDashboardSummary);
+
+/* =============================
+   👨‍🎓 INTERN MANAGEMENT
+============================= */
+
 router.get("/interns", getAllInterns);
 router.get("/interns/siwes", getSiwes);
 router.get("/interns/interns", getInterns);
