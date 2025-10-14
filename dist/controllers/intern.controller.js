@@ -5,10 +5,11 @@ const intern_model_1 = require("../models/intern.model");
 const response_1 = require("../utils/response");
 // Register intern
 const registerIntern = async (req, res) => {
+    var _a, _b, _c, _d, _e, _f;
     try {
         const { name, phone, email, school, category } = req.body;
-        const siwesForm = req.files?.siwesForm?.[0]?.path;
-        const paymentProof = req.files?.paymentProof?.[0]?.path;
+        const siwesForm = (_c = (_b = (_a = req.files) === null || _a === void 0 ? void 0 : _a.siwesForm) === null || _b === void 0 ? void 0 : _b[0]) === null || _c === void 0 ? void 0 : _c.path;
+        const paymentProof = (_f = (_e = (_d = req.files) === null || _d === void 0 ? void 0 : _d.paymentProof) === null || _e === void 0 ? void 0 : _e[0]) === null || _f === void 0 ? void 0 : _f.path;
         const existing = await intern_model_1.Intern.findOne({ phone });
         if (existing)
             return (0, response_1.sendResponse)(res, 400, false, "Phone number already registered");
@@ -57,4 +58,3 @@ const getInternDetails = async (req, res) => {
     }
 };
 exports.getInternDetails = getInternDetails;
-//# sourceMappingURL=intern.controller.js.map

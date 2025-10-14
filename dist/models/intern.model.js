@@ -48,4 +48,3 @@ const internSchema = new mongoose_1.Schema({
     status: { type: String, enum: ["Pending", "Accepted", "Rejected"], default: "Pending" },
 }, { timestamps: true });
 exports.Intern = mongoose_1.default.model("Intern", internSchema);
-//# sourceMappingURL=intern.model.js.map

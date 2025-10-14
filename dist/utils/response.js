@@ -9,4 +9,3 @@ const sendResponse = (res, statusCode, success, message, data = null) => {
     });
 };
 exports.sendResponse = sendResponse;
-//# sourceMappingURL=response.js.map

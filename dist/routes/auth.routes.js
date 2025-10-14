@@ -6,4 +6,3 @@ const router = (0, express_1.Router)();
 router.post("/register", auth_controller_1.register);
 router.post("/login", auth_controller_1.login);
 exports.default = router;
-//# sourceMappingURL=auth.routes.js.map

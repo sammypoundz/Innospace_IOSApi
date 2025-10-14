@@ -11,4 +11,3 @@ router.post("/register", upload_middleware_1.upload.fields([
 router.post("/attendance", intern_controller_1.markAttendance);
 router.get("/details/:phone", intern_controller_1.getInternDetails);
 exports.default = router;
-//# sourceMappingURL=intern.routes.js.map

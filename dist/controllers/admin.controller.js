@@ -27,15 +27,17 @@ const getInterns = async (_req, res) => {
 };
 exports.getInterns = getInterns;
 const uploadAcceptance = async (req, res) => {
+    var _a;
     const { id } = req.params;
-    const acceptanceLetter = req.file?.path;
+    const acceptanceLetter = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
     const intern = await intern_model_1.Intern.findByIdAndUpdate(id, { acceptanceLetter }, { new: true });
     return (0, response_1.sendResponse)(res, 200, true, "Acceptance letter uploaded", intern);
 };
 exports.uploadAcceptance = uploadAcceptance;
 const uploadCertificate = async (req, res) => {
+    var _a;
     const { id } = req.params;
-    const certificate = req.file?.path;
+    const certificate = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
     const intern = await intern_model_1.Intern.findByIdAndUpdate(id, { certificate }, { new: true });
     return (0, response_1.sendResponse)(res, 200, true, "Certificate uploaded", intern);
 };
@@ -63,6 +65,7 @@ exports.createManualIntern = createManualIntern;
    📊 ADMIN DASHBOARD SUMMARY
 ============================= */
 const getAdminDashboardSummary = async (_req, res) => {
+    var _a, _b, _c;
     try {
         // 🧮 Intern stats
         const totalInterns = await intern_model_1.Intern.countDocuments();
@@ -74,9 +77,9 @@ const getAdminDashboardSummary = async (_req, res) => {
         const totalBudgetAgg = await finance_model_1.Budget.aggregate([{ $group: { _id: null, total: { $sum: "$amount" } } }]);
         const totalRevenueAgg = await finance_model_1.Revenue.aggregate([{ $group: { _id: null, total: { $sum: "$amount" } } }]);
         const totalExpenseAgg = await finance_model_1.Expense.aggregate([{ $group: { _id: null, total: { $sum: "$amount" } } }]);
-        const totalBudget = totalBudgetAgg[0]?.total || 0;
-        const totalRevenue = totalRevenueAgg[0]?.total || 0;
-        const totalExpenses = totalExpenseAgg[0]?.total || 0;
+        const totalBudget = ((_a = totalBudgetAgg[0]) === null || _a === void 0 ? void 0 : _a.total) || 0;
+        const totalRevenue = ((_b = totalRevenueAgg[0]) === null || _b === void 0 ? void 0 : _b.total) || 0;
+        const totalExpenses = ((_c = totalExpenseAgg[0]) === null || _c === void 0 ? void 0 : _c.total) || 0;
         const netBalance = totalRevenue - totalExpenses;
         // 🧾 Recent transactions
         const recentExpenses = await finance_model_1.Expense.find().sort({ createdAt: -1 }).limit(5);
@@ -109,4 +112,3 @@ const getAdminDashboardSummary = async (_req, res) => {
     }
 };
 exports.getAdminDashboardSummary = getAdminDashboardSummary;
-//# sourceMappingURL=admin.controller.js.map

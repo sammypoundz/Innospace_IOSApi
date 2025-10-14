@@ -25,4 +25,3 @@ exports.upload = (0, multer_1.default)({
         cb(null, true);
     },
 });
-//# sourceMappingURL=upload.middleware.js.map

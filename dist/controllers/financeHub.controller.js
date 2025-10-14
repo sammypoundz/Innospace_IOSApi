@@ -52,6 +52,7 @@ exports.getRevenues = getRevenues;
    📈 FINANCIAL SUMMARY
 ============================= */
 const getFinanceSummary = async (_req, res) => {
+    var _a, _b, _c, _d, _e;
     const totalExpenses = await finance_model_1.Expense.aggregate([
         { $group: { _id: null, total: { $sum: "$amount" } } },
     ]);
@@ -62,12 +63,11 @@ const getFinanceSummary = async (_req, res) => {
         { $group: { _id: null, total: { $sum: "$amount" } } },
     ]);
     const summary = {
-        totalBudget: totalBudget[0]?.total || 0,
-        totalRevenue: totalRevenue[0]?.total || 0,
-        totalExpenses: totalExpenses[0]?.total || 0,
-        netBalance: (totalRevenue[0]?.total || 0) - (totalExpenses[0]?.total || 0),
+        totalBudget: ((_a = totalBudget[0]) === null || _a === void 0 ? void 0 : _a.total) || 0,
+        totalRevenue: ((_b = totalRevenue[0]) === null || _b === void 0 ? void 0 : _b.total) || 0,
+        totalExpenses: ((_c = totalExpenses[0]) === null || _c === void 0 ? void 0 : _c.total) || 0,
+        netBalance: (((_d = totalRevenue[0]) === null || _d === void 0 ? void 0 : _d.total) || 0) - (((_e = totalExpenses[0]) === null || _e === void 0 ? void 0 : _e.total) || 0),
     };
     return (0, response_1.sendResponse)(res, 200, true, "Finance summary fetched", summary);
 };
 exports.getFinanceSummary = getFinanceSummary;
-//# sourceMappingURL=financeHub.controller.js.map

@@ -22,4 +22,3 @@ router.get("/status", (_req, res) => {
     res.json({ status: "ok", message: "InnospaceX API is running" });
 });
 exports.default = router;
-//# sourceMappingURL=index.js.map

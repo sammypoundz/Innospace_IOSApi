@@ -25,4 +25,3 @@ router.post("/interns/:id/certificate", upload_middleware_1.upload.single("certi
 router.put("/interns/:id/accept", admin_controller_1.acceptIntern);
 router.delete("/interns/:id", admin_controller_1.deleteIntern);
 exports.default = router;
-//# sourceMappingURL=admin.routes.js.map

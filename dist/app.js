@@ -22,4 +22,3 @@ app.get("/", (_req, res) => {
 // Register all routes
 app.use("/api", routes_1.default);
 exports.default = app;
-//# sourceMappingURL=app.js.map

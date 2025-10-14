@@ -86,4 +86,3 @@ RevenueSchema.pre("save", function (next) {
 exports.Budget = mongoose_1.default.model("Budget", BudgetSchema);
 exports.Expense = mongoose_1.default.model("Expense", ExpenseSchema);
 exports.Revenue = mongoose_1.default.model("Revenue", RevenueSchema);
-//# sourceMappingURL=finance.model.js.map

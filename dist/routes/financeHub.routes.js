@@ -19,4 +19,3 @@ router.get("/revenue", financeHub_controller_1.getRevenues);
 // Summary
 router.get("/summary", financeHub_controller_1.getFinanceSummary);
 exports.default = router;
-//# sourceMappingURL=financeHub.routes.js.map

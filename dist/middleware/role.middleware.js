@@ -14,4 +14,3 @@ const authorize = (...roles) => (req, res, next) => {
     next();
 };
 exports.authorize = authorize;
-//# sourceMappingURL=role.middleware.js.map
