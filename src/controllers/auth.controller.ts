@@ -4,42 +4,76 @@ import { User } from "../models/user.model";
 import { generateToken } from "../utils/jwt";
 import { sendResponse } from "../utils/response";
 
+// ✅ Register new user (staff or admin)
 export const register = async (req: Request, res: Response) => {
   try {
-    const { fullname, email, password, role } = req.body;
+    const { fullname, email, phone, password, role } = req.body;
 
-    const existing = await User.findOne({ email });
-    if (existing) return sendResponse(res, 400, false, "Email already exists");
+    if (!fullname || !email || !phone || !password) {
+      return sendResponse(res, 400, false, "All fields are required");
+    }
+
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+      return sendResponse(res, 400, false, "Email already exists");
+    }
+
+    const existingPhone = await User.findOne({ phone });
+    if (existingPhone) {
+      return sendResponse(res, 400, false, "Phone number already exists");
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = new User({ fullname, email, password: hashedPassword, role });
+    const user = new User({
+      fullname,
+      email,
+      phone,
+      password: hashedPassword,
+      role,
+    });
+
     await user.save();
 
     return sendResponse(res, 201, true, "User registered successfully", {
       id: user._id,
-      email: user.email,
       fullname: user.fullname,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
     });
   } catch (err: any) {
     return sendResponse(res, 500, false, err.message);
   }
 };
 
+// ✅ Login user (with email or phone)
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { identifier, password } = req.body;
 
-    const user = await User.findOne({ email });
-    if (!user) return sendResponse(res, 400, false, "Invalid credentials");
+    if (!identifier || !password) {
+      return sendResponse(res, 400, false, "Email/Phone and password are required");
+    }
+
+    const user = await User.findOne({
+      $or: [{ email: identifier }, { phone: identifier }],
+    });
+
+    if (!user) {
+      return sendResponse(res, 400, false, "Invalid credentials");
+    }
 
     const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword)
+    if (!validPassword) {
       return sendResponse(res, 400, false, "Invalid credentials");
+    }
 
+    // ✅ Include phone in the token
     const token = generateToken({
       id: user._id,
       email: user.email,
+      phone: user.phone,
       role: user.role,
     });
 
@@ -49,6 +83,7 @@ export const login = async (req: Request, res: Response) => {
         id: user._id,
         fullname: user.fullname,
         email: user.email,
+        phone: user.phone,
         role: user.role,
       },
     });
