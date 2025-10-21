@@ -3,6 +3,7 @@ import authRoutes from "./auth.routes";
 import internRoutes from "./intern.routes";
 import adminRoutes from "./admin.routes";
 import financeHubRoutes from "./financeHub.routes";
+import attendanceRoutes from "./attendance.routes";
 
 const router = Router();
 
@@ -17,6 +18,8 @@ router.use("/admin", adminRoutes);
 
 //Finance routes 
 router.use("/finance", financeHubRoutes);
+
+router.use("/attendance", attendanceRoutes);
 
 // ✅ API status check
 router.get("/status", (_req, res) => {

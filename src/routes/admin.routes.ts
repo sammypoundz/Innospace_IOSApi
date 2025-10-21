@@ -42,3 +42,5 @@ router.put("/interns/:id/accept", acceptIntern);
 router.delete("/interns/:id", deleteIntern);
 
 export default router;
+
+
