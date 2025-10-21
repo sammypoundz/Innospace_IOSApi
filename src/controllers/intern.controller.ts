@@ -2,15 +2,19 @@ import { Request, Response } from "express";
 import { Intern } from "../models/intern.model";
 import { sendResponse } from "../utils/response";
 
-// Register intern
+// ✅ Register intern (SIWES or Regular)
 export const registerIntern = async (req: Request, res: Response) => {
   try {
-    const { name, phone, email, school, category } = req.body;
+    const { name, phone, email, school, category, course } = req.body;
     const siwesForm = (req.files as any)?.siwesForm?.[0]?.path;
     const paymentProof = (req.files as any)?.paymentProof?.[0]?.path;
 
+    if (!name || !phone || !email || !school || !category || !course)
+      return sendResponse(res, 400, false, "All fields are required");
+
     const existing = await Intern.findOne({ phone });
-    if (existing) return sendResponse(res, 400, false, "Phone number already registered");
+    if (existing)
+      return sendResponse(res, 400, false, "Phone number already registered");
 
     const intern = new Intern({
       name,
@@ -18,6 +22,7 @@ export const registerIntern = async (req: Request, res: Response) => {
       email,
       school,
       category,
+      course,
       siwesForm,
       paymentProof,
     });
@@ -29,7 +34,7 @@ export const registerIntern = async (req: Request, res: Response) => {
   }
 };
 
-// Attendance
+// ✅ Mark attendance (still works for interns)
 export const markAttendance = async (req: Request, res: Response) => {
   try {
     const { phone } = req.body;
@@ -42,7 +47,7 @@ export const markAttendance = async (req: Request, res: Response) => {
   }
 };
 
-// Get intern details by phone
+// ✅ Get intern details by phone
 export const getInternDetails = async (req: Request, res: Response) => {
   try {
     const { phone } = req.params;
