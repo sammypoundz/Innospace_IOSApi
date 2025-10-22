@@ -51,11 +51,38 @@ export const deleteIntern = async (req: Request, res: Response) => {
   return sendResponse(res, 200, true, "Intern deleted");
 };
 
+/**
+ * ✅ Manually Create an Intern (with full validation)
+ */
 export const createManualIntern = async (req: Request, res: Response) => {
-  const { name, phone, email, school, category } = req.body;
-  const intern = new Intern({ name, phone, email, school, category });
-  await intern.save();
-  return sendResponse(res, 201, true, "Intern created manually", intern);
+  try {
+    const { name, phone, email, school, category, course } = req.body;
+
+    if (!name || !phone || !email || !school || !category || !course) {
+      return sendResponse(res, 400, false, "All fields (name, phone, email, school, category, course) are required");
+    }
+
+    const existing = await Intern.findOne({ phone });
+    if (existing) {
+      return sendResponse(res, 400, false, "Phone number already exists");
+    }
+
+    const intern = new Intern({
+      name,
+      phone,
+      email,
+      school,
+      category,
+      course,
+      status: "Pending",
+    });
+
+    await intern.save();
+    return sendResponse(res, 201, true, "Intern created successfully", intern);
+  } catch (err: any) {
+    console.error("Manual Intern Creation Error:", err);
+    return sendResponse(res, 500, false, err.message);
+  }
 };
 
 /* =============================
