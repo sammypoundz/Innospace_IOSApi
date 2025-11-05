@@ -32,7 +32,7 @@ export const markAttendance = async (req: Request, res: Response) => {
     // Hub location (update to actual InnoSpaceX coordinates)
     const HUB_LAT = 11.998583;
     const HUB_LON = 8.559140;
-    const MAX_DISTANCE_METERS = 500;
+    const MAX_DISTANCE_METERS = 1000;
 
     const distance = getDistanceFromLatLonInMeters(
       Number(latitude),
