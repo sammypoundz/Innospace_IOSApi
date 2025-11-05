@@ -14,7 +14,7 @@ import {
 const router = Router();
 
 // 🛡 Only FO, ED, HeadDev can access
-router.use(protect, authorize("FO", "ED", "HeadDev"));
+router.use(protect, authorize("FinanceOfficer", "ED", "HeadDev"));
 
 // Budgets
 router.post("/budget", createBudget);
