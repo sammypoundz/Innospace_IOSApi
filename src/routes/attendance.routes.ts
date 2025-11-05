@@ -5,6 +5,6 @@ import { authorize } from "../middleware/role.middleware";
 const router = Router();
 
 router.post("/mark", markAttendance);
-router.get("/attendance/summary", protect, authorize("ED", "FinanceOfficer", "HeadDev"), getAttendanceSummary);
+router.get("/summary", protect, authorize("ED", "FinanceOfficer", "HeadDev"), getAttendanceSummary);
 
 export default router;
