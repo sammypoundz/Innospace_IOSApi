@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { Intern } from "../models/intern.model";
+import { User } from "../models/user.model";   // ✅ Added
 import { Budget, Expense, Revenue } from "../models/finance.model";
 import { sendResponse } from "../utils/response";
 
@@ -84,6 +85,100 @@ export const createManualIntern = async (req: Request, res: Response) => {
     return sendResponse(res, 500, false, err.message);
   }
 };
+
+
+/* =============================
+   👥 STAFF MANAGEMENT
+============================= */
+
+/**
+ * ✅ Get All Staff
+ */
+export const getAllStaff = async (req: Request, res: Response) => {
+  const { page = 1, limit = 10 } = req.query;
+
+  const staff = await User.find()
+    .skip((+page - 1) * +limit)
+    .limit(+limit);
+
+  const count = await User.countDocuments();
+
+  return sendResponse(res, 200, true, "All staff fetched", { staff, count });
+};
+
+/**
+ * ✅ Create Staff Manually
+ */
+export const createManualStaff = async (req: Request, res: Response) => {
+  try {
+    const { fullname, email, phone, password, role } = req.body;
+
+    if (!fullname || !email || !phone || !password) {
+      return sendResponse(res, 400, false, "fullname, email, phone, password are required");
+    }
+
+    const exists = await User.findOne({ $or: [{ phone }, { email }] });
+
+    if (exists) {
+      return sendResponse(res, 400, false, "Email or Phone already exists");
+    }
+
+    const user = new User({
+      fullname,
+      email,
+      phone,
+      password,
+      role: role || "Staff",
+    });
+
+    await user.save();
+    return sendResponse(res, 201, true, "Staff created successfully", user);
+  } catch (err: any) {
+    return sendResponse(res, 500, false, err.message);
+  }
+};
+
+/**
+ * ✅ Update Staff Role
+ */
+export const updateStaffRole = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
+
+    if (!role) return sendResponse(res, 400, false, "Role is required");
+
+    const validRoles = ["ED", "HeadDev", "FinanceOfficer", "Instructor", "Staff"];
+    if (!validRoles.includes(role))
+      return sendResponse(res, 400, false, "Invalid role");
+
+    const staff = await User.findByIdAndUpdate(id, { role }, { new: true });
+
+    if (!staff) return sendResponse(res, 404, false, "Staff not found");
+
+    return sendResponse(res, 200, true, "Staff role updated", staff);
+  } catch (err: any) {
+    return sendResponse(res, 500, false, err.message);
+  }
+};
+
+/**
+ * ✅ Delete Staff
+ */
+export const deleteStaff = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const staff = await User.findByIdAndDelete(id);
+
+    if (!staff) return sendResponse(res, 404, false, "Staff not found");
+
+    return sendResponse(res, 200, true, "Staff deleted");
+  } catch (err: any) {
+    return sendResponse(res, 500, false, err.message);
+  }
+};
+
 
 /* =============================
    📊 ADMIN DASHBOARD SUMMARY
