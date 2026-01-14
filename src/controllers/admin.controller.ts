@@ -7,14 +7,13 @@ import { sendResponse } from "../utils/response";
 /* =============================
    📄 INTERN MANAGEMENT
 ============================= */
-export const getAllInterns = async (req: Request, res: Response) => {
-  const { page = 1, limit = 10 } = req.query;
-  const interns = await Intern.find()
-    .skip((+page - 1) * +limit)
-    .limit(+limit);
+export const getAllInterns = async (_req: Request, res: Response) => {
+  const interns = await Intern.find();
   const count = await Intern.countDocuments();
+
   return sendResponse(res, 200, true, "All interns fetched", { interns, count });
 };
+
 
 export const getSiwes = async (_req: Request, res: Response) => {
   const data = await Intern.find({ category: "SIWES" });
@@ -94,17 +93,13 @@ export const createManualIntern = async (req: Request, res: Response) => {
 /**
  * ✅ Get All Staff
  */
-export const getAllStaff = async (req: Request, res: Response) => {
-  const { page = 1, limit = 10 } = req.query;
-
-  const staff = await User.find()
-    .skip((+page - 1) * +limit)
-    .limit(+limit);
-
+export const getAllStaff = async (_req: Request, res: Response) => {
+  const staff = await User.find();
   const count = await User.countDocuments();
 
   return sendResponse(res, 200, true, "All staff fetched", { staff, count });
 };
+
 
 /**
  * ✅ Create Staff Manually
