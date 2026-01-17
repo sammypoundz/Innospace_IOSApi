@@ -14,7 +14,7 @@ import {
   deleteIntern,
   createManualIntern,
 
-  /* Staff ✅ */
+  /* Staff */
   getAllStaff,
   createManualStaff,
   updateStaffRole,
@@ -37,23 +37,32 @@ router.get("/summary", getAdminDashboardSummary);
 /* =============================
    👨‍🎓 INTERN MANAGEMENT
 ============================= */
-router.get("/interns", getAllInterns);
-router.get("/interns/siwes", getSiwes);
-router.get("/interns/interns", getInterns);
+router.get("/interns", getAllInterns);               // 🔹 All interns
+router.get("/interns/siwes", getSiwes);              // 🔹 SIWES interns
+router.get("/interns/interns", getInterns);          // 🔹 Regular interns
+router.get("/interns/:studentId", getAllInterns);    // 🔹 Single intern by ID ✅
 
 router.post("/interns/manual", createManualIntern);
-router.post("/interns/:id/acceptance", upload.single("acceptanceLetter"), uploadAcceptance);
-router.post("/interns/:id/certificate", upload.single("certificate"), uploadCertificate);
+router.post(
+  "/interns/:id/acceptance",
+  upload.single("acceptanceLetter"),
+  uploadAcceptance
+);
+router.post(
+  "/interns/:id/certificate",
+  upload.single("certificate"),
+  uploadCertificate
+);
 
 router.put("/interns/:id/accept", acceptIntern);
 router.delete("/interns/:id", deleteIntern);
 
 /* =============================
-   👔 STAFF MANAGEMENT ✅
+   👔 STAFF MANAGEMENT
 ============================= */
-router.get("/staff", getAllStaff);                // ✅ Get all staff
-router.post("/staff/manual", createManualStaff);  // ✅ Create staff
-router.put("/staff/:id/role", updateStaffRole);   // ✅ Update staff role
-router.delete("/staff/:id", deleteStaff);         // ✅ Delete staff
+router.get("/staff", getAllStaff);
+router.post("/staff/manual", createManualStaff);
+router.put("/staff/:id/role", updateStaffRole);
+router.delete("/staff/:id", deleteStaff);
 
 export default router;

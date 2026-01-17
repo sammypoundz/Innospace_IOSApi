@@ -7,12 +7,31 @@ import { sendResponse } from "../utils/response";
 /* =============================
    📄 INTERN MANAGEMENT
 ============================= */
-export const getAllInterns = async (_req: Request, res: Response) => {
-  const interns = await Intern.find();
-  const count = await Intern.countDocuments();
+export const getAllInterns = async (req: Request, res: Response) => {
+  try {
+    const { studentId } = req.params;
 
-  return sendResponse(res, 200, true, "All interns fetched", { interns, count });
+    // 🔹 If studentId is provided → fetch ONE intern
+    if (studentId) {
+      const intern = await Intern.findById(studentId);
+
+      if (!intern) {
+        return sendResponse(res, 404, false, "Student not found");
+      }
+
+      return sendResponse(res, 200, true, "Student fetched", intern);
+    }
+
+    // 🔹 If no studentId → fetch ALL interns
+    const interns = await Intern.find();
+    const count = await Intern.countDocuments();
+
+    return sendResponse(res, 200, true, "All interns fetched", { interns, count });
+  } catch (error: any) {
+    return sendResponse(res, 500, false, error.message);
+  }
 };
+
 
 
 export const getSiwes = async (_req: Request, res: Response) => {
