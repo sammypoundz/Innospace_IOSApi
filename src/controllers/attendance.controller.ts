@@ -1,12 +1,11 @@
 import { Request, Response } from "express";
-import mongoose from "mongoose";
-import { Intern, IIntern } from "../models/intern.model";
-import { User, IUser } from "../models/user.model";
+import { Intern } from "../models/intern.model";
+import { User } from "../models/user.model";
 import { Attendance } from "../models/attendance.model";
 import { sendResponse } from "../utils/response";
 
 /* ===========================
- ✅ MARK ATTENDANCE (QR / ID CARD)
+ ✅ MARK ATTENDANCE (ID CARD / QR)
 =========================== */
 export const markAttendance = async (req: Request, res: Response) => {
   try {
@@ -16,38 +15,33 @@ export const markAttendance = async (req: Request, res: Response) => {
       return sendResponse(res, 400, false, "Student ID is required");
     }
 
-    // ✅ Validate MongoDB ObjectId
-    if (!mongoose.Types.ObjectId.isValid(studentId)) {
-      return sendResponse(res, 400, false, "Invalid Student ID format");
-    }
-
-    let user: IIntern | IUser | null = null;
     let userType: "Intern" | "Staff" = "Intern";
+    let userId;
     let name = "";
     let phone = "";
 
     /* =====================
        🔍 CHECK INTERN FIRST
     ===================== */
-    const intern = await Intern.findById(studentId);
+    const intern = await Intern.findOne({ studentId });
 
     if (intern) {
-      user = intern;
       userType = "Intern";
+      userId = intern._id;
       name = intern.name;
       phone = intern.phone;
     } else {
       /* =====================
-         🔍 CHECK STAFF
+         🔍 CHECK STAFF (OPTIONAL)
       ===================== */
-      const staff = await User.findById(studentId);
+      const staff = await User.findOne({ staffId: studentId });
 
       if (!staff) {
         return sendResponse(res, 404, false, "Invalid Student ID");
       }
 
-      user = staff;
       userType = "Staff";
+      userId = staff._id;
       name = staff.fullname;
       phone = staff.phone;
     }
@@ -55,16 +49,16 @@ export const markAttendance = async (req: Request, res: Response) => {
     /* =====================
        📅 PREVENT DOUBLE CHECK-IN
     ===================== */
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    const alreadyMarked = await Attendance.findOne({
-      userId: user._id,
-      date: { $gte: startOfToday },
+    const alreadyCheckedIn = await Attendance.findOne({
+      studentId,
+      date: { $gte: today },
     });
 
-    if (alreadyMarked) {
-      return sendResponse(res, 409, false, "Attendance already marked today");
+    if (alreadyCheckedIn) {
+      return sendResponse(res, 409, false, "Attendance already marked for today");
     }
 
     /* =====================
@@ -74,8 +68,8 @@ export const markAttendance = async (req: Request, res: Response) => {
 
     const attendance = await Attendance.create({
       userType,
-      userId: user._id,      // Intern/Staff reference
-      studentId: user._id.toString(), // QR-scanned ID
+      userId,
+      studentId,
       name,
       phone,
       date: now,
@@ -89,6 +83,44 @@ export const markAttendance = async (req: Request, res: Response) => {
       "Attendance marked successfully",
       attendance
     );
+  } catch (err: any) {
+    return sendResponse(res, 500, false, err.message);
+  }
+};
+
+/* ===========================
+ ✅ ATTENDANCE SUMMARY (ADMIN)
+=========================== */
+export const getAttendanceSummary = async (req: Request, res: Response) => {
+  try {
+    const { period } = req.query; // day | month | all
+
+    const now = new Date();
+    let startDate = new Date(0);
+
+    if (period === "day") {
+      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    } else if (period === "month") {
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    }
+
+    const records = await Attendance.find({
+      date: { $gte: startDate },
+    }).sort({ createdAt: -1 });
+
+    const total = records.length;
+    const interns = records.filter(r => r.userType === "Intern").length;
+    const staff = records.filter(r => r.userType === "Staff").length;
+
+    return sendResponse(res, 200, true, "Attendance summary fetched", {
+      period: period || "all",
+      summary: {
+        total,
+        interns,
+        staff,
+      },
+      records,
+    });
   } catch (err: any) {
     return sendResponse(res, 500, false, err.message);
   }

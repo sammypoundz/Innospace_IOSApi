@@ -18,6 +18,10 @@ export const registerIntern = async (req: Request, res: Response) => {
       return sendResponse(res, 400, false, "Phone number already registered");
     }
 
+    // 🔹 Generate Student ID
+    const count = await Intern.countDocuments();
+    const studentId = `INNOSPACE-${new Date().getFullYear()}-${String(count + 1).padStart(4, "0")}`;
+
     let siwesFormUrl: string | undefined;
     let paymentProofUrl: string | undefined;
 
@@ -35,6 +39,7 @@ export const registerIntern = async (req: Request, res: Response) => {
     }
 
     const intern = new Intern({
+      studentId,
       name,
       phone,
       email,
@@ -47,17 +52,12 @@ export const registerIntern = async (req: Request, res: Response) => {
 
     await intern.save();
 
-    return sendResponse(
-      res,
-      201,
-      true,
-      "Intern registered successfully",
-      intern
-    );
+    return sendResponse(res, 201, true, "Intern registered successfully", intern);
   } catch (err: any) {
     return sendResponse(res, 500, false, err.message);
   }
 };
+
 
 
 // ✅ Mark attendance

@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface IIntern extends Document {
+  studentId: string; // INNO/SIWES/2026/001
   name: string;
   phone: string;
   email: string;
@@ -26,11 +27,41 @@ export interface IIntern extends Document {
 
 const internSchema = new Schema<IIntern>(
   {
-    name: { type: String, required: true },
-    phone: { type: String, required: true, unique: true },
-    email: { type: String, required: true },
-    school: { type: String, required: true },
-    category: { type: String, enum: ["Intern", "SIWES"], required: true },
+    studentId: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      index: true, // 🔍 fast QR lookup
+    },
+
+    name: {
+      type: String,
+      required: true,
+    },
+
+    phone: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+
+    email: {
+      type: String,
+      required: true,
+    },
+
+    school: {
+      type: String,
+      required: true,
+    },
+
+    category: {
+      type: String,
+      enum: ["Intern", "SIWES"],
+      required: true,
+    },
+
     course: {
       type: String,
       enum: [
@@ -45,10 +76,12 @@ const internSchema = new Schema<IIntern>(
       ],
       required: true,
     },
+
     siwesForm: { type: String },
     paymentProof: { type: String },
     acceptanceLetter: { type: String },
     certificate: { type: String },
+
     status: {
       type: String,
       enum: ["Pending", "Accepted", "Rejected"],
